@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+    <!-- DispatcherServlet Context: defines this servlet's request-processing
+        infrastructure -->
+
+    <!-- Enables the Spring MVC @Controller programming model -->
+    <annotation-driven />
+
+    <!-- Handles HTTP GET requests for /resources/** by efficiently serving
+        up static resources in the ${webappRoot}/resources directory -->
+    <resources mapping="/resources/**" location="/resources/" />
+
+    <!-- Resolves views selected for rendering by @Controllers to .jsp resources
+        in the /WEB-INF/views directory -->
+
+    <!-- Hibernate 4 SessionFactory Bean definition -->
+    <beans:bean id="hibernate5AnnotatedSessionFactory"
+                class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <beans:property name="dataSource" ref="dataSource" />
+        <beans:property name="annotatedClasses">
+            <beans:list>
+                <beans:value>com.springmvcproject.core.model.Student</beans:value>
+                <beans:value>com.springmvcproject.core.model.Menu</beans:value>
+                <beans:value>com.springmvcproject.core.model.Content</beans:value>
+                <beans:value>com.springmvcproject.core.account.model.User</beans:value>
+                <beans:value>com.springmvcproject.core.account.model.Role</beans:value>
+                <beans:value>com.springmvcproject.core.model.Announcement</beans:value>
+                <beans:value>com.springmvcproject.core.model.File</beans:value>
+            </beans:list>
+        </beans:property>
+        <beans:property name="hibernateProperties">
+            <beans:props>
+                <beans:prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect
+                </beans:prop>
+                <beans:prop key="hibernate.show_sql">true</beans:prop>
+                <beans:prop key="hibernate.connection.url">jdbc:mysql://localhost:3306/student</beans:prop>
+                <beans:prop key="hibernate.connection.driver_class">com.mysql.jdbc.Driver</beans:prop>
+            </beans:props>
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean id="studentDAO" class="com.springmvcproject.core.dao.StudentDAOImpl">
+        <beans:property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
+    </beans:bean>
+    <beans:bean id="studentService" class="com.springmvcproject.core.service.StudentServiceImpl">
+        <beans:property name="studentDAO" ref="studentDAO"/>
+    </beans:bean>
+
+    <beans:bean id="menuDAO" class="com.springmvcproject.core.dao.MenuDAOImpl">
+        <beans:property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
+    </beans:bean>
+    <beans:bean id="menuService" class="com.springmvcproject.core.service.MenuServiceImpl">
+        <beans:property name="menuDAO" ref="menuDAO"/>
+    </beans:bean>
+
+    <beans:bean id="contentDAO" class="com.springmvcproject.core.dao.ContentDAOImpl">
+        <beans:property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
+    </beans:bean>
+    <beans:bean id="contentService" class="com.springmvcproject.core.service.ContentServiceImpl">
+        <beans:property name="contentService" ref="contentDAO"/>
+    </beans:bean>
+
+    <beans:bean id="announcementDAO" class="com.springmvcproject.core.dao.AnnouncementDAOImpl">
+        <beans:property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
+    </beans:bean>
+    <beans:bean id="announcementService" class="com.springmvcproject.core.service.AnnouncementServiceImpl">
+        <beans:property name="announcementService" ref="announcementDAO"/>
+    </beans:bean>
+
+    <beans:bean id="fileDAO" class="com.springmvcproject.core.dao.FileDAOImpl">
+        <beans:property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
+    </beans:bean>
+    <beans:bean id="fileService" class="com.springmvcproject.core.service.FileServiceImpl">
+        <beans:property name="fileService" ref="fileDAO"/>
+    </beans:bean>
+
+    <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <beans:property name="maxInMemorySize" value="1048576"/>
+        <beans:property name="maxUploadSize" value="20971520"/>
+    </beans:bean>
+
+    <context:component-scan base-package="com.springmvcproject.core , com.springmvcproject.core.account.*" />
+
+    <tx:annotation-driven transaction-manager="transactionMng"/>
+
+    <beans:bean id="transactionMng" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <beans:property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
+    </beans:bean>
+
+    <beans:bean id="userRepository" class="com.springmvcproject.core.account.repository.UserRepository"
+                abstract="true"/>
+
+    <beans:bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <beans:property name="basenames">
+            <beans:list>
+                <beans:value>classpath:validation</beans:value>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <beans:import resource="appconfig-data.xml"/>
+    <beans:import resource="security.xml"/>
+
+</beans:beans>
