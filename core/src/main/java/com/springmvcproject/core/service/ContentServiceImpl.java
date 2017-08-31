@@ -6,7 +6,6 @@ import com.springmvcproject.core.dao.HibernateDAO;
 import com.springmvcproject.core.dao.HibernateDAOImpl;
 import com.springmvcproject.core.model.Content;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.annotation.PostConstruct;
 
 /**
